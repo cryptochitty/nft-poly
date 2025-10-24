@@ -1,0 +1,31 @@
+
+import { Market } from './types';
+
+export const ALL_MARKETS: Market[] = [
+    { id: '0', question: 'Will ETH reach $5,000 by end of year?', imageUrl: 'https://i.imgur.com/8v5tJm8.png', outcomePrices: { yes: 65, no: 35 } },
+    { id: '1', question: 'Will Bitcoin Dominance be over 55% in Q4?', imageUrl: 'https://i.imgur.com/s6n2sJt.png', outcomePrices: { yes: 40, no: 60 } },
+    { id: '2', question: 'Will a Spot XRP ETF be approved this year?', imageUrl: 'https://i.imgur.com/JPTw3eX.png', outcomePrices: { yes: 15, no: 85 } },
+    { id: '3', question: 'Will Arbitrum daily active users surpass Optimism?', imageUrl: 'https://i.imgur.com/2s0xI3u.png', outcomePrices: { yes: 70, no: 30 } },
+    { id: '4', question: 'Will Solana Mobile sell over 100,000 units?', imageUrl: 'https://i.imgur.com/W1f3biy.png', outcomePrices: { yes: 55, no: 45 } },
+    { id: '5', question: 'Will Coinbase stock (COIN) close above $300?', imageUrl: 'https://i.imgur.com/dC3dM8k.png', outcomePrices: { yes: 25, no: 75 } },
+    { id: '6', question: 'Will a major US bank launch a stablecoin?', imageUrl: 'https://i.imgur.com/gTf7C8E.png', outcomePrices: { yes: 30, no: 70 } },
+    { id: '7', question: 'Will Dogecoin be integrated into X payments?', imageUrl: 'https://i.imgur.com/tX2g2gC.png', outcomePrices: { yes: 20, no: 80 } },
+    { id: '8', question: 'Will Tether (USDT) market cap exceed $150B?', imageUrl: 'https://i.imgur.com/8Qp4h2n.png', outcomePrices: { yes: 80, no: 20 } },
+    { id: '9', question: 'Will Uniswap v4 launch on mainnet this year?', imageUrl: 'https://i.imgur.com/w9N1k8r.png', outcomePrices: { yes: 60, no: 40 } },
+    { id: '10', question: 'Will Polygon (MATIC) rebrand to POL successfully?', imageUrl: 'https://i.imgur.com/3Z6E4Rj.png', outcomePrices: { yes: 90, no: 10 } },
+    { id: '11', question: 'Will Chainlink CCIP secure over $10B in value?', imageUrl: 'https://i.imgur.com/sX9g9aD.png', outcomePrices: { yes: 75, no: 25 } },
+    { id: '12', question: 'Will the Fed cut interest rates more than once?', imageUrl: 'https://i.imgur.com/mJ2b2dC.png', outcomePrices: { yes: 50, no: 50 } },
+    { id: '13', question: 'Will a GameFi token enter the top 20 by market cap?', imageUrl: 'https://i.imgur.com/k6O8v3E.png', outcomePrices: { yes: 35, no: 65 } },
+    { id: '14', question: 'Will EIP-4844 reduce L2 fees by over 90% on average?', imageUrl: 'https://i.imgur.com/lO7g3hD.png', outcomePrices: { yes: 95, no: 5 } },
+    { id: '15', question: 'Will Donald Trump win the 2024 election?', imageUrl: 'https://i.imgur.com/N7Gz5S1.png', outcomePrices: { yes: 48, no: 52 } },
+    { id: '16', question: 'Will global crypto users exceed 1 billion?', imageUrl: 'https://i.imgur.com/c5R1r2D.png', outcomePrices: { yes: 60, no: 40 } },
+    { id: '17', question: 'Will EigenLayer TVL surpass $20B?', imageUrl: 'https://i.imgur.com/vH9j9bB.png', outcomePrices: { yes: 85, no: 15 } },
+    { id: '18', question: 'Will MetaMask launch its own token?', imageUrl: 'https://i.imgur.com/t3g8h8F.png', outcomePrices: { yes: 10, no: 90 } },
+    { id: '19', question: 'Will AI-related tokens outperform the top 10 cryptos?', imageUrl: 'https://i.imgur.com/e4r3g3D.png', outcomePrices: { yes: 65, no: 35 } },
+    { id: '20', question: 'Will the SEC lose its case against Ripple?', imageUrl: 'https://i.imgur.com/JPTw3eX.png', outcomePrices: { yes: 70, no: 30 } },
+    { id: '21', question: 'Will a decentralized social media app reach 10M DAU?', imageUrl: 'https://i.imgur.com/wV3c3bF.png', outcomePrices: { yes: 5, no: 95 } },
+    { id: '22', question: 'Will NFT trading volume surpass its 2021 peak?', imageUrl: 'https://i.imgur.com/k6O8v3E.png', outcomePrices: { yes: 20, no: 80 } },
+    { id: '23', question: 'Will a country make Bitcoin legal tender this year?', imageUrl: 'https://i.imgur.com/s6n2sJt.png', outcomePrices: { yes: 15, no: 85 } },
+    { id: '24', question: 'Will BlackRock\'s Bitcoin ETF (IBIT) be the largest?', imageUrl: 'https://i.imgur.com/dC3dM8k.png', outcomePrices: { yes: 90, no: 10 } },
+    { id: '25', question: 'Will this app get a good grade?', imageUrl: 'https://i.imgur.com/lO7g3hD.png', outcomePrices: { yes: 99, no: 1 } },
+];
