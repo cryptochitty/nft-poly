@@ -16,11 +16,15 @@ import {
 } from 'wagmi/chains';
 import { walletConnect, metaMask, coinbaseWallet, injected } from '@wagmi/connectors';
 import { Web3Modal } from "@web3modal/react";
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 
 
 
 const projectId = '0a37a08544e5cdae64034ed6a636de35';
+
+// Create a client
+const queryClient = new QueryClient();
 
 
 // List of supported chains
@@ -101,12 +105,14 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <WagmiConfig config={wagmiConfig}>
-      <Web3Context.Provider value={{ connectWallet, disconnectWallet, isConnected, account, signMessage }}>
-        {children}
-        <Web3Modal projectId={projectId} theme="dark" accentColor="blue" defaultChain={mainnet.id} />
-      </Web3Context.Provider>
-    </WagmiConfig>
+    <QueryClientProvider client={queryClient}>
+      <WagmiConfig config={wagmiConfig}>
+        <Web3Context.Provider value={{ connectWallet, disconnectWallet, isConnected, account, signMessage }}>
+          {children}
+          <Web3Modal projectId={projectId} theme="dark" accentColor="blue" defaultChain={mainnet.id} />
+        </Web3Context.Provider>
+      </WagmiConfig>
+    </QueryClientProvider>
   );
 };
 
