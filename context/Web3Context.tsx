@@ -46,7 +46,17 @@ const chains = [
 export const wagmiConfig = createConfig({
   autoConnect: true,
   connectors: () => [
-    walletConnect({ projectId, chains, showQrModal: true }),
+    walletConnect({ 
+      projectId, 
+      chains, 
+      showQrModal: true,
+      metadata: {
+        name: 'Crypto Poly',
+        description: 'NFT Trading Game with Prediction Markets',
+        url: 'https://nft-poly-sigma.vercel.app',
+        icons: ['https://nft-poly-sigma.vercel.app/icon.png']
+      }
+    }),
     metaMask({ chains }),
     coinbaseWallet({ appName: 'Crypto Poly', chains }),
     injected({ chains, shimDisconnect: true }),
@@ -59,6 +69,8 @@ interface Web3ContextType {
   isConnected: boolean;
   account: string | null;
   signMessage: (message: string) => Promise<string | null>;
+  signPrediction: (marketId: string, prediction: string) => Promise<string | null>;
+  signTransaction: (transaction: any) => Promise<string | null>;
 }
 
 const Web3Context = createContext<Web3ContextType | null>(null);
@@ -104,10 +116,32 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const signPrediction = async (marketId: string, prediction: string) => {
+    try {
+      const message = `Crypto Poly Prediction\nMarket: ${marketId}\nPrediction: ${prediction}\nTimestamp: ${Date.now()}`;
+      return await signMessageAsync({ message });
+    } catch (err) {
+      console.error('Prediction signature failed:', err);
+      return null;
+    }
+  };
+
+  const signTransaction = async (transaction: any) => {
+    try {
+      // This would be used for actual on-chain transactions
+      // For now, we'll simulate with message signing
+      const message = `Transaction: ${JSON.stringify(transaction)}\nTimestamp: ${Date.now()}`;
+      return await signMessageAsync({ message });
+    } catch (err) {
+      console.error('Transaction signature failed:', err);
+      return null;
+    }
+  };
+
   return (
     <QueryClientProvider client={queryClient}>
       <WagmiConfig config={wagmiConfig}>
-        <Web3Context.Provider value={{ connectWallet, disconnectWallet, isConnected, account, signMessage }}>
+        <Web3Context.Provider value={{ connectWallet, disconnectWallet, isConnected, account, signMessage, signPrediction, signTransaction }}>
           {children}
           <Web3Modal projectId={projectId} theme="dark" accentColor="blue" defaultChain={mainnet.id} />
         </Web3Context.Provider>

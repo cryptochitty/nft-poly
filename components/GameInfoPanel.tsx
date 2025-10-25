@@ -1,96 +1,155 @@
-
-import React, { useState } from 'react';
-import { Player, BoardTile, Market, PlayerAction, MarketTile } from '../types';
-import Dice from './Dice';
-import MarketCard from './MarketCard';
-import NFTCard from './NFTCard';
+import React from 'react';
+import { Property } from '../types';
 
 interface GameInfoPanelProps {
-  players: Player[];
-  currentPlayer: Player;
-  dice: [number, number];
-  gameLog: string[];
-  board: BoardTile[];
-  markets: Market[];
-  playerAction: PlayerAction;
-  rollDice: () => void;
-  endTurn: () => void;
-  chooseOutcome: (market: Market, outcome: 'YES' | 'NO') => void;
+  playerBalance: number;
+  playerPosition: number;
+  gameState: {
+    predictionsMade: number;
+    accuracy: number;
+    nftsOwned: number;
+    propertiesOwned: number;
+  };
+  onRollDice: () => void;
+  onBuyProperty: () => void;
+  onSellProperty: () => void;
+  onMakePrediction: () => void;
+  onMintNFT: () => void;
+  selectedProperty: number | null;
+  properties: Property[];
 }
 
-const GameInfoPanel: React.FC<GameInfoPanelProps> = (props) => {
-  const { players, currentPlayer, dice, gameLog, board, markets, playerAction, rollDice, endTurn, chooseOutcome } = props;
-  const [activeTab, setActiveTab] = useState<'controls' | 'portfolio'>('controls');
-
-  const currentTile = board[currentPlayer.position];
-  const isMarketTile = currentTile.type === 'market';
-  const currentMarket = isMarketTile ? markets.find(m => m.id === (currentTile as MarketTile).marketId) : null;
-  const humanPlayer = players.find(p => !p.isBot)!;
-
-  const renderControls = () => {
-    if (currentPlayer.isBot) {
-        return <div className="text-purple-400 font-bold animate-pulse">Satoshi is thinking...</div>;
-    }
-    switch (playerAction) {
-        case PlayerAction.CAN_ROLL:
-            return <button onClick={rollDice} className="px-6 py-2 bg-green-600 text-white font-bold rounded shadow hover:bg-green-500 transition-colors w-full">Roll Dice</button>;
-        case PlayerAction.AWAITING_CHOICE:
-            return <p className="text-center text-yellow-400">Choose an outcome for the current market.</p>;
-        case PlayerAction.AWAITING_SIGNATURE:
-            return <p className="text-center text-cyan-400 animate-pulse">Waiting for signature...</p>;
-        case PlayerAction.CAN_END_TURN:
-            return <button onClick={endTurn} className="px-6 py-2 bg-red-600 text-white font-bold rounded shadow hover:bg-red-500 transition-colors w-full">End Turn</button>;
-        default:
-            return null;
-    }
-  }
+const GameInfoPanel: React.FC<GameInfoPanelProps> = ({
+  playerBalance,
+  playerPosition,
+  gameState,
+  onRollDice,
+  onBuyProperty,
+  onSellProperty,
+  onMakePrediction,
+  onMintNFT,
+  selectedProperty,
+  properties
+}) => {
+  const selectedProp = selectedProperty !== null ? properties[selectedProperty] : null;
 
   return (
-    <div className="w-full lg:w-96 bg-gray-900/70 backdrop-blur-sm p-4 rounded-lg border border-purple-700 space-y-4 flex flex-col max-h-[85vh]">
-      <div>
-        <h2 className="text-2xl font-bold font-orbitron text-purple-400 mb-2">Players</h2>
-        <div className="space-y-2">
-          {players.map(p => (
-            <div key={p.id} className={`p-2 rounded ${p.id === currentPlayer.id ? 'bg-purple-800 ring-2 ring-purple-400' : 'bg-gray-700'}`}>
-              <div className="flex justify-between items-center">
-                <span className="font-bold">{p.isBot ? '🤖' : '🚀'} {p.name}</span>
-                <span className="font-mono">${p.money}</span>
-              </div>
-            </div>
-          ))}
+    <div className="space-y-6">
+      {/* Player Stats */}
+      <div className="bg-gray-800 p-4 rounded-lg border border-gray-700">
+        <h3 className="text-lg font-bold mb-4 text-blue-400">Player Stats</h3>
+        <div className="space-y-3">
+          <div className="flex justify-between">
+            <span className="text-gray-300">Balance:</span>
+            <span className="text-green-400 font-semibold">${playerBalance.toLocaleString()}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-300">Position:</span>
+            <span className="text-blue-400 font-semibold">{playerPosition + 1}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-300">Properties:</span>
+            <span className="text-purple-400 font-semibold">{gameState.propertiesOwned}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-300">NFTs:</span>
+            <span className="text-yellow-400 font-semibold">{gameState.nftsOwned}</span>
+          </div>
         </div>
       </div>
 
-      <div className="flex border-b border-purple-800">
-        <button onClick={() => setActiveTab('controls')} className={`flex-1 py-2 font-orbitron ${activeTab === 'controls' ? 'text-purple-400 border-b-2 border-purple-400' : 'text-gray-400'}`}>Controls</button>
-        <button onClick={() => setActiveTab('portfolio')} className={`flex-1 py-2 font-orbitron ${activeTab === 'portfolio' ? 'text-purple-400 border-b-2 border-purple-400' : 'text-gray-400'}`}>My Portfolio ({humanPlayer.nfts.length})</button>
+      {/* Game Actions */}
+      <div className="bg-gray-800 p-4 rounded-lg border border-gray-700">
+        <h3 className="text-lg font-bold mb-4 text-green-400">Game Actions</h3>
+        <div className="space-y-3">
+          <button
+            onClick={onRollDice}
+            className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-semibold"
+          >
+            🎲 Roll Dice
+          </button>
+          
+          <button
+            onClick={onMakePrediction}
+            className="w-full px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors font-semibold"
+          >
+            🎯 Make Prediction
+          </button>
+          
+          <button
+            onClick={onMintNFT}
+            className="w-full px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg transition-colors font-semibold"
+          >
+            🎨 Mint NFT
+          </button>
+        </div>
       </div>
 
-      {activeTab === 'controls' && (
-        <div className="flex-grow flex flex-col items-center justify-between space-y-4">
-            {currentMarket && <MarketCard market={currentMarket} onChoose={chooseOutcome} disabled={playerAction !== PlayerAction.AWAITING_CHOICE} />}
-            <div className="flex flex-col items-center space-y-4 w-full">
-                <Dice values={dice} />
-                <div className="h-12 flex items-center justify-center w-full">
-                    {renderControls()}
-                </div>
-            </div>
+      {/* Property Actions */}
+      {selectedProp && (
+        <div className="bg-gray-800 p-4 rounded-lg border border-gray-700">
+          <h3 className="text-lg font-bold mb-4 text-orange-400">Property Actions</h3>
+          <div className="mb-4">
+            <h4 className="font-semibold text-white">{selectedProp.name}</h4>
+            <p className="text-sm text-gray-300">Type: {selectedProp.type}</p>
+            {selectedProp.price && (
+              <p className="text-sm text-gray-300">Price: ${selectedProp.price.toLocaleString()}</p>
+            )}
+            {selectedProp.rent && (
+              <p className="text-sm text-gray-300">Rent: ${selectedProp.rent}</p>
+            )}
+            {selectedProp.owner && (
+              <p className="text-sm text-gray-300">
+                Owner: {selectedProp.owner === 'player' ? 'You' : 'Other Player'}
+              </p>
+            )}
+          </div>
+          
+          <div className="space-y-2">
+            {!selectedProp.owner && selectedProp.price && playerBalance >= selectedProp.price && (
+              <button
+                onClick={onBuyProperty}
+                className="w-full px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors text-sm"
+              >
+                Buy Property
+              </button>
+            )}
+            
+            {selectedProp.owner === 'player' && (
+              <button
+                onClick={onSellProperty}
+                className="w-full px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors text-sm"
+              >
+                Sell Property
+              </button>
+            )}
+          </div>
         </div>
       )}
-       {activeTab === 'portfolio' && (
-         <div className="flex-grow space-y-2 overflow-y-auto pr-2">
-            {humanPlayer.nfts.length === 0 ? (
-                <p className="text-center text-gray-400 mt-8">You haven't collected any NFTs yet. Land on an unowned market to mint one!</p>
-            ) : (
-                humanPlayer.nfts.map(nft => <NFTCard key={nft.id} nft={nft} />)
-            )}
-         </div>
-       )}
 
-      <div>
-        <h3 className="text-xl font-bold font-orbitron text-purple-400 mb-2">Game Log</h3>
-        <div className="h-32 bg-gray-800 rounded p-2 overflow-y-auto text-xs flex flex-col-reverse">
-          {gameLog.map((log, i) => <p key={i} className="font-mono leading-tight">{log}</p>)}
+      {/* Trading Stats */}
+      <div className="bg-gray-800 p-4 rounded-lg border border-gray-700">
+        <h3 className="text-lg font-bold mb-4 text-cyan-400">Trading Stats</h3>
+        <div className="space-y-3">
+          <div className="flex justify-between">
+            <span className="text-gray-300">Predictions:</span>
+            <span className="text-blue-400 font-semibold">{gameState.predictionsMade}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-300">Accuracy:</span>
+            <span className="text-green-400 font-semibold">{gameState.accuracy}%</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Quick Tips */}
+      <div className="bg-gray-800 p-4 rounded-lg border border-gray-700">
+        <h3 className="text-lg font-bold mb-4 text-pink-400">Quick Tips</h3>
+        <div className="text-sm text-gray-300 space-y-2">
+          <p>• Click on properties to see details</p>
+          <p>• Make accurate predictions to earn rewards</p>
+          <p>• Buy properties to collect rent</p>
+          <p>• Mint NFTs to showcase achievements</p>
         </div>
       </div>
     </div>

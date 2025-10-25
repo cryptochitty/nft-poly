@@ -1,41 +1,107 @@
-
 import React from 'react';
-import { Player, BoardTile, Market } from '../types';
 import Tile from './Tile';
-import PlayerToken from './PlayerToken';
+import { Property } from '../types';
 
 interface BoardProps {
-  players: Player[];
-  board: BoardTile[];
-  markets: Market[];
+  properties: Property[];
+  playerPosition: number;
+  onPropertyClick: (index: number) => void;
+  selectedProperty: number | null;
 }
 
-const getTilePosition = (index: number): { gridRow: string; gridColumn: string } => {
-  if (index >= 0 && index <= 10) return { gridRow: '11', gridColumn: `${11 - index}` };
-  if (index >= 11 && index <= 20) return { gridRow: `${11 - (index - 10)}`, gridColumn: '1' };
-  if (index >= 21 && index <= 30) return { gridRow: '1', gridColumn: `${1 + (index - 20)}` };
-  if (index >= 31 && index <= 39) return { gridRow: `${1 + (index - 30)}`, gridColumn: '11' };
-  return { gridRow: '11', gridColumn: '11' }; // GO
-};
+const Board: React.FC<BoardProps> = ({ 
+  properties, 
+  playerPosition, 
+  onPropertyClick, 
+  selectedProperty 
+}) => {
+  const boardSize = 8; // 8x8 grid
+  const totalTiles = boardSize * 4 - 4; // 28 tiles total (corners counted once)
 
-const Board: React.FC<BoardProps> = ({ players, board, markets }) => {
-  return (
-    <div className="aspect-square w-full max-w-[800px] mx-auto bg-gray-800 border-4 border-purple-500 rounded-lg p-2">
-      <div className="relative w-full h-full grid grid-cols-11 grid-rows-11 gap-0.5">
-        {board.map((tile, index) => (
-          <div key={index} style={getTilePosition(index)}>
-            <Tile tile={tile} players={players} markets={markets} />
-          </div>
-        ))}
-        <div className="col-start-2 col-span-9 row-start-2 row-span-9 bg-gray-900 flex items-center justify-center border-2 border-purple-800 rounded-md">
-            <h1 className="text-5xl md:text-6xl font-bold font-orbitron text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600 text-center leading-tight">
-                CRYPTO<br/>POLY
-            </h1>
-        </div>
-        {players.map((player) => (
-          <PlayerToken key={player.id} player={player} positionStyles={getTilePosition(player.position)} />
-        ))}
+  const getTilePosition = (index: number) => {
+    if (index < boardSize) {
+      // Top row
+      return { row: 0, col: index };
+    } else if (index < boardSize * 2 - 1) {
+      // Right column
+      return { row: index - boardSize + 1, col: boardSize - 1 };
+    } else if (index < boardSize * 3 - 2) {
+      // Bottom row (right to left)
+      return { row: boardSize - 1, col: boardSize * 3 - 3 - index };
+    } else {
+      // Left column (bottom to top)
+      return { row: boardSize * 4 - 4 - index, col: 0 };
+    }
+  };
+
+  const renderTile = (index: number) => {
+    const position = getTilePosition(index);
+    const property = properties[index];
+    const isPlayerHere = playerPosition === index;
+    const isSelected = selectedProperty === index;
+
+    return (
+      <div
+        key={index}
+        className="absolute"
+        style={{
+          top: `${position.row * 12.5}%`,
+          left: `${position.col * 12.5}%`,
+          width: '12.5%',
+          height: '12.5%',
+        }}
+      >
+        <Tile
+          property={property}
+          index={index}
+          isPlayerHere={isPlayerHere}
+          isSelected={isSelected}
+          onClick={() => onPropertyClick(index)}
+        />
       </div>
+    );
+  };
+
+  return (
+    <div className="relative w-full max-w-2xl mx-auto aspect-square bg-gray-700 rounded-lg border-4 border-gray-600">
+      {/* Corner spaces */}
+      <div className="absolute top-0 left-0 w-1/8 h-1/8 bg-blue-600 rounded-tl-lg flex items-center justify-center">
+        <div className="text-xs font-bold text-center">START</div>
+      </div>
+      <div className="absolute top-0 right-0 w-1/8 h-1/8 bg-red-600 rounded-tr-lg flex items-center justify-center">
+        <div className="text-xs font-bold text-center">JAIL</div>
+      </div>
+      <div className="absolute bottom-0 right-0 w-1/8 h-1/8 bg-yellow-600 rounded-br-lg flex items-center justify-center">
+        <div className="text-xs font-bold text-center">FREE</div>
+      </div>
+      <div className="absolute bottom-0 left-0 w-1/8 h-1/8 bg-green-600 rounded-bl-lg flex items-center justify-center">
+        <div className="text-xs font-bold text-center">GO</div>
+      </div>
+
+      {/* Game tiles */}
+      {Array.from({ length: totalTiles }, (_, index) => renderTile(index))}
+
+      {/* Center area */}
+      <div className="absolute top-1/4 left-1/4 w-1/2 h-1/2 bg-gray-800 rounded-lg border-2 border-gray-600 flex flex-col items-center justify-center">
+        <div className="text-2xl font-bold text-blue-400 mb-2">CRYPTO POLY</div>
+        <div className="text-sm text-gray-400 text-center">
+          NFT Trading Game
+        </div>
+        <div className="mt-4 text-xs text-gray-500 text-center">
+          Predict • Trade • Mint • Win
+        </div>
+      </div>
+
+      {/* Player indicator */}
+      {playerPosition !== -1 && (
+        <div
+          className="absolute w-4 h-4 bg-yellow-400 rounded-full border-2 border-white z-10 animate-pulse"
+          style={{
+            top: `${getTilePosition(playerPosition).row * 12.5 + 4}%`,
+            left: `${getTilePosition(playerPosition).col * 12.5 + 4}%`,
+          }}
+        />
+      )}
     </div>
   );
 };
